@@ -19,7 +19,7 @@ set_target_properties( ${LIBNAME}
     VERSION ${SHARED_LIBRARY_VERSION} SOVERSION ${SHARED_LIBRARY_VERSION}
     DEFINE_SYMBOL Net_EXPORTS)
 target_link_libraries( ${LIBNAME} PocoFoundation ${SYSLIBS})
-
+add_dependencies(${LIBNAME} PocoFoundation)
 install(
     DIRECTORY include/Poco
     DESTINATION include
