@@ -6,7 +6,9 @@
 # ENABLE_{COMPONENT}
 # ENABLE_TESTS
 
+
 project(Poco)
+cmake_policy(SET CMP0077 OLD)
 
 cmake_minimum_required(VERSION 2.8.0)
 

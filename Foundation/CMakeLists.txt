@@ -115,10 +115,19 @@ install(
 
 install(
     TARGETS ${LIBNAME}
+    EXPORT ${LIBNAME}
     LIBRARY DESTINATION lib${LIB_SUFFIX}
     ARCHIVE DESTINATION lib${LIB_SUFFIX}
     RUNTIME DESTINATION bin
     )
+
+# install the export info
+install(
+        EXPORT ${LIBNAME}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+        NAMESPACE ${LIBNAME}::
+        FILE ${LIBNAME}-config.cmake
+)
 
 if (ENABLE_TESTS)
     add_subdirectory( samples )
