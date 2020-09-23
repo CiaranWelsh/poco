@@ -244,18 +244,39 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "SunPro")
 endif (${CMAKE_CXX_COMPILER_ID} MATCHES "SunPro")
 target_link_libraries( ${LIBNAME} ${SYSLIBS})
 
+#install(
+#    DIRECTORY include/Poco
+#    DESTINATION include
+#    PATTERN ".svn" EXCLUDE
+#    )
+#
+#install(
+#    TARGETS ${LIBNAME}
+#    LIBRARY DESTINATION lib${LIB_SUFFIX}
+#    ARCHIVE DESTINATION lib${LIB_SUFFIX}
+#    RUNTIME DESTINATION bin
+#    )
+
+install(TARGETS ${LIBNAME}
+        EXPORT ${LIBNAME}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIBNAME}
+        )
+
+# install the export info
 install(
-    DIRECTORY include/Poco
-    DESTINATION include
-    PATTERN ".svn" EXCLUDE
-    )
-    
-install(
-    TARGETS ${LIBNAME}
-    LIBRARY DESTINATION lib${LIB_SUFFIX}
-    ARCHIVE DESTINATION lib${LIB_SUFFIX}
-    RUNTIME DESTINATION bin
-    )
+        EXPORT ${LIBNAME}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+        NAMESPACE ${LIBNAME}::
+        FILE ${LIBNAME}-config.cmake
+)
+
+#install public headers
+install(DIRECTORY include/Poco DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Poco)
+
+
 
 if (ENABLE_TESTS)
     add_subdirectory( samples )
