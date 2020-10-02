@@ -5,7 +5,7 @@
 
 PROJECT(Poco)
 
-cmake_minimum_required(VERSION 2.8.0)
+cmake_minimum_required(VERSION 3.15..3.18)
 
 set(SHARED_LIBRARY_VERSION "22")
 
@@ -158,14 +158,43 @@ IF (ENABLE_TESTS)
    add_subdirectory(CppUnit)
 ENDIF ()
 
-add_subdirectory(Foundation)
-add_subdirectory(XML)
-add_subdirectory(JSON)
-add_subdirectory(MongoDB)
-add_subdirectory(PDF)
-add_subdirectory(Util)
-add_subdirectory(Net)
-#add_subdirectory(Web)
+option(BUILD_XML "BUILD POCO XML" ON)
+option(BUILD_JSON "BUILD JPOCO SON" ON)
+option(BUILD_MongoDB "BUILD MongPOCO oDB" ON)
+option(BUILD_PDF "BUILD POCO PDF" ON)
+option(BUILD_Util "BUILD UPOCO til" ON)
+option(BUILD_Net "BUILD POCO Net" ON)
+option(BUILD_Web "BUILD POCO Web" ON)
+
+if(BUILD_XML)
+    add_subdirectory(Foundation)
+endif()
+
+if(BUILD_JSON)
+    add_subdirectory(XML)
+endif()
+
+if(BUILD_MongoDB)
+    add_subdirectory(JSON)
+endif()
+
+if(BUILD_PDF)
+    add_subdirectory(MongoDB)
+endif()
+
+if(BUILD_Util)
+    add_subdirectory(PDF)
+endif()
+
+if(BUILD_Net)
+    add_subdirectory(Util)
+endif()
+
+if(BUILD_Web)
+    add_subdirectory(Net)
+endif()
+
+add_subdirectory(Web)
 
 # OPENSSL_SSL_LIBRARY
 if(OPENSSL_FOUND)
