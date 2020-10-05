@@ -153,7 +153,7 @@ install(
 )
 
 #install public headers
-install(DIRECTORY include/Poco DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Poco)
+install(DIRECTORY include/Poco DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if (ENABLE_TESTS)
   add_subdirectory(samples)

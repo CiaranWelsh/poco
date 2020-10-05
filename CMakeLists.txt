@@ -30,16 +30,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Setup C/C++ compiler options
 #################################################################################
 
-if(NOT MSVC_IDE)
-  if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
-      "Choose the type of build, options are: None Debug Release" FORCE)
-  endif()
-  message(STATUS "Setting Poco build type - ${CMAKE_BUILD_TYPE}")
-endif()
+if (NOT MSVC_IDE)
+    if (NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+                "Choose the type of build, options are: None Debug Release" FORCE)
+    endif ()
+    message(STATUS "Setting Poco build type - ${CMAKE_BUILD_TYPE}")
+endif ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
-    set( CMAKE_BUILD_TYPE "RelWithDebInfo" )
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif ()
 
 # http://www.cmake.org/Wiki/CMake_Useful_Variables :
@@ -56,41 +56,41 @@ endif ()
 set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Set debug library postfix" FORCE)
 
 option(ENABLE_TESTS
-  "Set to OFF|ON (default is OFF) to control build of POCO tests & samples" OFF)
+        "Set to OFF|ON (default is OFF) to control build of POCO tests & samples" OFF)
 
 option(POCO_STATIC
-  "Set to OFF|ON (default is OFF) to control build of POCO as STATIC library" OFF)
+        "Set to OFF|ON (default is OFF) to control build of POCO as STATIC library" OFF)
 
 option(POCO_UNBUNDLED
-  "Set to OFF|ON (default is OFF) to control linking dependencies as external" OFF)
+        "Set to OFF|ON (default is OFF) to control linking dependencies as external" OFF)
 
 # Uncomment from next two lines to force statitc or dynamic library, default is autodetection
-if(POCO_STATIC)
-    add_definitions( -DPOCO_STATIC -DPOCO_NO_AUTOMATIC_LIBS)    
-    set( LIB_MODE STATIC )
+if (POCO_STATIC)
+    add_definitions(-DPOCO_STATIC -DPOCO_NO_AUTOMATIC_LIBS)
+    set(LIB_MODE STATIC)
     message(STATUS "Building static libraries")
-else(POCO_STATIC)
-    set( LIB_MODE SHARED )
+else (POCO_STATIC)
+    set(LIB_MODE SHARED)
     message(STATUS "Building dynamic libraries")
-endif(POCO_STATIC)
+endif (POCO_STATIC)
 
 IF (ENABLE_TESTS)
-  include(CTest)
-  ENABLE_TESTING()
-  message(STATUS "Building with unittests & samples")
+    include(CTest)
+    ENABLE_TESTING()
+    message(STATUS "Building with unittests & samples")
 ELSE ()
-  message(STATUS "Building without tests & samples")
+    message(STATUS "Building without tests & samples")
 ENDIF ()
 
 IF (POCO_UNBUNDLED)
-  add_definitions( -DPOCO_UNBUNDLED)
-  message(STATUS "Build with using external sqlite, libz, pcre, expat ...")
+    add_definitions(-DPOCO_UNBUNDLED)
+    message(STATUS "Build with using external sqlite, libz, pcre, expat ...")
 ELSE ()
-  message(STATUS "Build with using internal copy of sqlite, libz, pcre, expat, ...")
+    message(STATUS "Build with using internal copy of sqlite, libz, pcre, expat, ...")
 ENDIF ()
 
 # Set local include path
-include_directories( CppUnit/include Foundation/include XML/include Net/include NetSSL_OpenSSL/include Util/include Data/include WebWidgets/include Zip/include Crypto/include Web/include JSON/include MongoDB/include PDF/include)
+include_directories(CppUnit/include Foundation/include XML/include Net/include NetSSL_OpenSSL/include Util/include Data/include WebWidgets/include Zip/include Crypto/include Web/include JSON/include MongoDB/include PDF/include)
 
 include(CheckTypeSize)
 include(FindCygwin)
@@ -103,61 +103,62 @@ include(FindMySQL)
 #include(FindApache2)
 
 # OS Detection
-if(CMAKE_SYSTEM MATCHES "Windows")
- 
- add_definitions( -DPOCO_OS_FAMILY_WINDOWS)
- set(SYSLIBS iphlpapi gdi32 odbc32)
- 
- if (CMAKE_C_COMPILER_ID MATCHES "MSVC")
+if (CMAKE_SYSTEM MATCHES "Windows")
+
+    add_definitions(-DPOCO_OS_FAMILY_WINDOWS)
+    set(SYSLIBS iphlpapi gdi32 odbc32)
+
+    if (CMAKE_C_COMPILER_ID MATCHES "MSVC")
         message(STATUS "XXX: MS Visual Compiler detected")
- endif (CMAKE_C_COMPILER_ID MATCHES "MSVC")
+    endif (CMAKE_C_COMPILER_ID MATCHES "MSVC")
 
-endif(CMAKE_SYSTEM MATCHES "Windows")
+endif (CMAKE_SYSTEM MATCHES "Windows")
 
-if (CMAKE_SYSTEM MATCHES "Linux" AND NOT ANDROID )
-  add_definitions( -DPOCO_OS_FAMILY_UNIX )
-  # Standard 'must be' defines
-  add_definitions( -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
-  set(SYSLIBS  pthread dl rt)
-endif(CMAKE_SYSTEM MATCHES "Linux" AND NOT ANDROID )
+if (CMAKE_SYSTEM MATCHES "Linux" AND NOT ANDROID)
+    add_definitions(-DPOCO_OS_FAMILY_UNIX)
+    # Standard 'must be' defines
+    add_definitions(-D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+    set(SYSLIBS pthread dl rt)
+endif (CMAKE_SYSTEM MATCHES "Linux" AND NOT ANDROID)
 
 if (CMAKE_SYSTEM MATCHES "SunOS")
-  add_definitions( -DPOCO_OS_FAMILY_UNIX )
-  # Standard 'must be' defines
-  add_definitions( -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 )
-  set(SYSLIBS  pthread socket xnet nsl resolv rt dl)
-endif(CMAKE_SYSTEM MATCHES "SunOS")
+    add_definitions(-DPOCO_OS_FAMILY_UNIX)
+    # Standard 'must be' defines
+    add_definitions(-D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+    set(SYSLIBS pthread socket xnet nsl resolv rt dl)
+endif (CMAKE_SYSTEM MATCHES "SunOS")
 
 if (CMAKE_COMPILER_IS_MINGW)
-    add_definitions(-DWC_NO_BEST_FIT_CHARS=0x400  -DPOCO_WIN32_UTF8)
-    add_definitions(-mno-cygwin -D_WIN32 -DMINGW32 -DWINVER=0x500 -DODBCVER=0x0300 -DPOCO_THREAD_STACK_SIZE -DFoundation_Config_INCLUDED )
-  link_directories(/usr/local/lib /usr/lib)
-  include_directories(/usr/local/include /usr/include)
+    add_definitions(-DWC_NO_BEST_FIT_CHARS=0x400 -DPOCO_WIN32_UTF8)
+    add_definitions(-mno-cygwin -D_WIN32 -DMINGW32 -DWINVER=0x500 -DODBCVER=0x0300 -DPOCO_THREAD_STACK_SIZE -DFoundation_Config_INCLUDED)
+    link_directories(/usr/local/lib /usr/lib)
+    include_directories(/usr/local/include /usr/include)
 endif (CMAKE_COMPILER_IS_MINGW)
 
 if (CMAKE_COMPILER_IS_CYGWIN)
-#    add_definitions(-DWC_NO_BEST_FIT_CHARS=0x400  -DPOCO_WIN32_UTF8)
+    #    add_definitions(-DWC_NO_BEST_FIT_CHARS=0x400  -DPOCO_WIN32_UTF8)
 endif (CMAKE_COMPILER_IS_CYGWIN)
 
 # SunPro C++
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "SunPro")
-  add_definitions( -D_BSD_SOURCE -library=stlport4)
+    add_definitions(-D_BSD_SOURCE -library=stlport4)
 endif (${CMAKE_CXX_COMPILER_ID} MATCHES "SunPro")
 
 # iOS
 if (IOS)
-  add_definitions( -DPOCO_HAVE_IPv6 -DPOCO_NO_FPENVIRONMENT -DPOCO_NO_STAT64 -DPOCO_NO_SHAREDLIBS -DPOCO_NO_NET_IFTYPES )
-endif(IOS)
+    add_definitions(-DPOCO_HAVE_IPv6 -DPOCO_NO_FPENVIRONMENT -DPOCO_NO_STAT64 -DPOCO_NO_SHAREDLIBS -DPOCO_NO_NET_IFTYPES)
+endif (IOS)
 
 #ANDROID
 if (ANDROID)
-  add_definitions( -DPOCO_ANDROID -DPOCO_NO_FPENVIRONMENT -DPOCO_NO_WSTRING -DPOCO_NO_SHAREDMEMORY )
-endif()
+    add_definitions(-DPOCO_ANDROID -DPOCO_NO_FPENVIRONMENT -DPOCO_NO_WSTRING -DPOCO_NO_SHAREDMEMORY)
+endif ()
 
 IF (ENABLE_TESTS)
-   add_subdirectory(CppUnit)
+    add_subdirectory(CppUnit)
 ENDIF ()
 
+# added by ciaran welsh for roadrunner
 option(BUILD_XML "BUILD POCO XML" ON)
 option(BUILD_JSON "BUILD JPOCO SON" ON)
 option(BUILD_MongoDB "BUILD MongPOCO oDB" ON)
@@ -165,62 +166,70 @@ option(BUILD_PDF "BUILD POCO PDF" ON)
 option(BUILD_Util "BUILD UPOCO til" ON)
 option(BUILD_Net "BUILD POCO Net" ON)
 option(BUILD_Web "BUILD POCO Web" ON)
+option(BUILD_DATA "BUILD_DATA poco option" ON)
+option(BUILD_ZIP "BUILD_ZIP poco option" ON)
 
-if(BUILD_XML)
-    add_subdirectory(Foundation)
-endif()
-
-if(BUILD_JSON)
+add_subdirectory(Foundation)
+if (BUILD_XML)
     add_subdirectory(XML)
-endif()
+endif ()
 
-if(BUILD_MongoDB)
+if (BUILD_JSON)
     add_subdirectory(JSON)
-endif()
+endif ()
 
-if(BUILD_PDF)
+if (BUILD_MongoDB)
     add_subdirectory(MongoDB)
-endif()
+endif ()
 
-if(BUILD_Util)
+if (BUILD_PDF)
     add_subdirectory(PDF)
-endif()
+endif ()
 
-if(BUILD_Net)
+if (BUILD_Util)
     add_subdirectory(Util)
-endif()
+endif ()
 
-if(BUILD_Web)
+if (BUILD_Net)
     add_subdirectory(Net)
-endif()
+endif ()
 
-add_subdirectory(Web)
+if (BUILD_Web)
+    add_subdirectory(Web)
+endif ()
+
 
 # OPENSSL_SSL_LIBRARY
-if(OPENSSL_FOUND)
+if (OPENSSL_FOUND)
     include_directories(${OPENSSL_INCLUDE_DIR})
     add_subdirectory(NetSSL_OpenSSL)
     add_subdirectory(Crypto)
-endif(OPENSSL_FOUND)
+endif (OPENSSL_FOUND)
 
+if (BUILD_DATA)
 add_subdirectory(Data)
+endif()
 #add_subdirectory(WebWidgets)
-add_subdirectory(Zip)
 
-if(APRUTIL_FOUND AND APACHE_FOUND)
+if (BUILD_ZIP)
+add_subdirectory(Zip)
+endif()
+if (APRUTIL_FOUND AND APACHE_FOUND)
     add_subdirectory(ApacheConnector)
-endif(APRUTIL_FOUND AND APACHE_FOUND)
+endif (APRUTIL_FOUND AND APACHE_FOUND)
 
 #############################################################
 # Uninstall stuff see: http://www.vtk.org/Wiki/CMake_FAQ
-CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
 
-ADD_CUSTOM_TARGET(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+if (UNINSTALL_POCO)
+    CONFIGURE_FILE(
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+            IMMEDIATE @ONLY)
 
+    ADD_CUSTOM_TARGET(uninstall
+            "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+endif ()
 #############################################################
 # Enable packaging
 
