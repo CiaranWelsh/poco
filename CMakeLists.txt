@@ -158,62 +158,49 @@ IF (ENABLE_TESTS)
     add_subdirectory(CppUnit)
 ENDIF ()
 
-# added by ciaran welsh for roadrunner
-option(BUILD_XML "BUILD POCO XML" ON)
-option(BUILD_JSON "BUILD JPOCO SON" ON)
-option(BUILD_MongoDB "BUILD MongPOCO oDB" ON)
-option(BUILD_PDF "BUILD POCO PDF" ON)
-option(BUILD_Util "BUILD UPOCO til" ON)
-option(BUILD_Net "BUILD POCO Net" ON)
-option(BUILD_Web "BUILD POCO Web" ON)
-option(BUILD_DATA "BUILD_DATA poco option" ON)
-option(BUILD_ZIP "BUILD_ZIP poco option" ON)
 
 add_subdirectory(Foundation)
-if (BUILD_XML)
+if (${BUILD_XML})
     add_subdirectory(XML)
 endif ()
 
-if (BUILD_JSON)
+if (${BUILD_JSON})
     add_subdirectory(JSON)
 endif ()
 
-if (BUILD_MongoDB)
+if (${BUILD_MongoDB})
     add_subdirectory(MongoDB)
 endif ()
 
-if (BUILD_PDF)
+if (${BUILD_PDF})
     add_subdirectory(PDF)
 endif ()
 
-if (BUILD_Util)
+if (${BUILD_Util})
     add_subdirectory(Util)
 endif ()
 
-if (BUILD_Net)
+if (${BUILD_Net})
     add_subdirectory(Net)
-endif ()
-
-if (BUILD_Web)
-    add_subdirectory(Web)
 endif ()
 
 
 # OPENSSL_SSL_LIBRARY
-if (OPENSSL_FOUND)
-    include_directories(${OPENSSL_INCLUDE_DIR})
-    add_subdirectory(NetSSL_OpenSSL)
-    add_subdirectory(Crypto)
-endif (OPENSSL_FOUND)
-
-if (BUILD_DATA)
-add_subdirectory(Data)
-endif()
+if (${BUILD_SSL})
+    if (OPENSSL_FOUND)
+        include_directories(${OPENSSL_INCLUDE_DIR})
+        add_subdirectory(NetSSL_OpenSSL)
+        add_subdirectory(Crypto)
+    endif (OPENSSL_FOUND)
+endif ()
+if (${BUILD_DATA})
+    add_subdirectory(Data)
+endif ()
 #add_subdirectory(WebWidgets)
 
-if (BUILD_ZIP)
-add_subdirectory(Zip)
-endif()
+if (${BUILD_ZIP})
+    add_subdirectory(Zip)
+endif ()
 if (APRUTIL_FOUND AND APACHE_FOUND)
     add_subdirectory(ApacheConnector)
 endif (APRUTIL_FOUND AND APACHE_FOUND)
@@ -221,7 +208,7 @@ endif (APRUTIL_FOUND AND APACHE_FOUND)
 #############################################################
 # Uninstall stuff see: http://www.vtk.org/Wiki/CMake_FAQ
 
-if (UNINSTALL_POCO)
+if (${UNINSTALL_POCO})
     CONFIGURE_FILE(
             "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
             "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
