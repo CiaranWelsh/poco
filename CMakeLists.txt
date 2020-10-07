@@ -74,6 +74,8 @@ else (POCO_STATIC)
     message(STATUS "Building dynamic libraries")
 endif (POCO_STATIC)
 
+message(STATUS "Building Poco as a ${LIB_MODE} library")
+
 IF (ENABLE_TESTS)
     include(CTest)
     ENABLE_TESTING()
