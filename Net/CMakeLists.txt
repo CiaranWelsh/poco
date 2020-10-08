@@ -149,7 +149,7 @@ install(
         EXPORT ${LIBNAME}
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
         NAMESPACE ${LIBNAME}::
-        FILE ${LIBNAME}-config.cmake
+        FILE ${LIBNAME}Config.cmake
 )
 
 #install public headers
