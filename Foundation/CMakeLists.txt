@@ -217,47 +217,26 @@ set(WIN_SRCS
         src/WindowsConsoleChannel.cpp
         )
 
+if (WIN32)
+    if (NOT EXISTS "${CMAKE_MC_COMPILER}")
+        message(FATAL_ERROR "Cannot locate the microsoft message compiler (mc.exe). You can resolve this by passing
+    -DMC_MESSAGE_COMPILER=\"C:/Program Files (x86)/Windows Kits/10/bin/10.0.18362.0/x64/mc.exe\"
+")
+    endif ()
+    if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc")
+        message(FATAL_ERROR "${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc does not exist")
+    endif ()
 
-macro(POCO_HEADERS out name)
-    set_source_files_properties(${ARGN} PROPERTIES HEADER_FILE_ONLY TRUE)
-    source_group("${name}\\Header Files" FILES ${ARGN})
-    list(APPEND ${out} ${ARGN})
-endmacro()
+    message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc")
 
-macro(POCO_MESSAGES out name)
-    if(WIN32)
-        foreach(msg ${ARGN})
-            get_filename_component(msg_name ${msg} NAME)
-            get_filename_component(msg_path ${msg} ABSOLUTE)
-            string(REPLACE ".mc" ".h" hdr ${msg_name})
-            set_source_files_properties(${hdr} PROPERTIES GENERATED TRUE)
-            add_custom_command(
-                OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${hdr}
-                DEPENDS ${msg}
-                COMMAND ${CMAKE_MC_COMPILER}
-                ARGS
-                    -h ${CMAKE_CURRENT_BINARY_DIR}
-                    -r ${CMAKE_CURRENT_BINARY_DIR}
-                    ${msg_path}
-                VERBATIM # recommended: p260
-            )
+    execute_process(
+            COMMAND "${CMAKE_MC_COMPILER}" -h "${CMAKE_CURRENT_BINARY_DIR}" -r "${CMAKE_CURRENT_BINARY_DIR}" ${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc)
 
-            # Add the generated file to the include directory
-            include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-            # Add the generated headers to POCO_HEADERS of the component
-            POCO_HEADERS( ${out} ${name} ${CMAKE_CURRENT_BINARY_DIR}/${hdr})
-
-        endforeach()
-
-        set_source_files_properties(${ARGN} PROPERTIES HEADER_FILE_ONLY TRUE)
-        source_group("${name}\\Message Files" FILES ${ARGN})
-        list(APPEND ${out} ${ARGN})
-
-    endif(WIN32)
-endmacro()
-
-POCO_MESSAGES(SRCS Logging src/pocomsg.mc)
+    if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pocomsg.h")
+        message(FATAL_ERROR "${CMAKE_CURRENT_BINARY_DIR}/pocomsg.h has not sucessfully been generated")
+    endif ()
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+endif ()
 
 set(LIN_SRCS
         src/SyslogChannel.cpp
