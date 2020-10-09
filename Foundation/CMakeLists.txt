@@ -15,6 +15,8 @@ if (WIN32)
             set(kit_bindir "${kit_dir}/bin/x86")
         endif (X64)
     endif ()
+    message(STATUS "sdk_bindir ${sdk_bindir}")
+    message(STATUS "kit_bindir ${kit_bindir}")
     find_program(CMAKE_MC_COMPILER mc.exe HINTS "${sdk_bindir}" "${kit_bindir}"
             DOC "path to message compiler")
     if (NOT CMAKE_MC_COMPILER)
@@ -209,16 +211,13 @@ set(WIN_SRCS
         )
 
 if (WIN32)
-    set(RES_SRCS ${CMAKE_SOURCE_DIR}/Foundation/src/pocomsg.h)
+    set(RES_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.h)
+    message(STATUS "RES_SRCS ${RES_SRCS}")
     set_source_files_properties(${RES_SRCS} PROPERTIES GENERATED true)
     add_custom_command(
             OUTPUT ${RES_SRCS}
-            DEPENDS ${CMAKE_SOURCE_DIR}/Foundation/src/pocomsg.mc
-            COMMAND ${CMAKE_MC_COMPILER}
-            ARGS ARGS
-            -h ${CMAKE_SOURCE_DIR}/Foundation/src
-            -r ${CMAKE_SOURCE_DIR}/Foundation/src
-            ${CMAKE_SOURCE_DIR}/Foundation/src/pocomsg.mc
+            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc"
+            COMMAND "${CMAKE_MC_COMPILER}" -h "${CMAKE_CURRENT_SOURCE_DIR}/src" -r "${CMAKE_CURRRENT_SOURCE_DIR}/src" "${CMAKE_CURRRENT_SOURCE_DIR}/src/pocomsg.mc"
             VERBATIM # recommended: p260	    VERBATIM # recommended: p260
     )
 
