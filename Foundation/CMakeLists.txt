@@ -1,30 +1,37 @@
 set(LIBNAME "PocoFoundation")
 
-if (WIN32)
-    # cmake has CMAKE_RC_COMPILER, but no message compiler
-    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
-        # this path is only present for 2008+, but we currently require PATH to
-        # be set up anyway
-        get_filename_component(sdk_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" REALPATH)
-        get_filename_component(kit_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot]" REALPATH)
-        if (X64)
-            set(sdk_bindir "${sdk_dir}/bin/x64")
-            set(kit_bindir "${kit_dir}/bin/x64")
-        else (X64)
-            set(sdk_bindir "${sdk_dir}/bin")
-            set(kit_bindir "${kit_dir}/bin/x86")
-        endif (X64)
-    endif ()
-    message(STATUS "sdk_bindir ${sdk_bindir}")
-    message(STATUS "kit_bindir ${kit_bindir}")
-    find_program(CMAKE_MC_COMPILER mc.exe HINTS "${sdk_bindir}" "${kit_bindir}"
-            DOC "path to message compiler")
-    if (NOT CMAKE_MC_COMPILER)
-        message(FATAL_ERROR "message compiler not found: required to build")
-    endif (NOT CMAKE_MC_COMPILER)
-    message(STATUS "Found message compiler: ${CMAKE_MC_COMPILER}")
-    mark_as_advanced(CMAKE_MC_COMPILER)
-endif (WIN32)
+#if (WIN32)
+#    # cmake has CMAKE_RC_COMPILER, but no message compiler
+#    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
+#        # this path is only present for 2008+, but we currently require PATH to
+#        # be set up anyway
+#        get_filename_component(sdk_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" REALPATH)
+#        get_filename_component(kit_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot]" REALPATH)
+#        set (X64 TRUE)
+#        if ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+#            set(X64 FALSE)
+#        endif()
+#        message(STATUS "CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P}")
+#        message(STATUS "X64 ${X64}")
+#        message(STATUS "MSVC_VERSION ${MSVC_VERSION}")
+#        if (X64)
+#            set(sdk_bindir "${sdk_dir}/bin/x64")
+#            set(kit_bindir "${kit_dir}/bin/x64")
+#        else (X64)
+#            set(sdk_bindir "${sdk_dir}/bin")
+#            set(kit_bindir "${kit_dir}/bin/x86")
+#        endif (X64)
+#    endif ()
+#    message(STATUS "sdk_bindir ${sdk_bindir}")
+#    message(STATUS "kit_bindir ${kit_bindir}")
+#    find_program(CMAKE_MC_COMPILER mc.exe HINTS "${sdk_bindir}" "${kit_bindir}"
+#            DOC "path to message compiler")
+#    if (NOT CMAKE_MC_COMPILER)
+#        message(FATAL_ERROR "message compiler not found: required to build")
+#    endif (NOT CMAKE_MC_COMPILER)
+#    message(STATUS "Found message compiler: ${CMAKE_MC_COMPILER}")
+#    mark_as_advanced(CMAKE_MC_COMPILER)
+#endif (WIN32)
 
 set(BASE_SRCS
         src/ASCIIEncoding.cpp
@@ -210,18 +217,47 @@ set(WIN_SRCS
         src/WindowsConsoleChannel.cpp
         )
 
-if (WIN32)
-    set(RES_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.h)
-    message(STATUS "RES_SRCS ${RES_SRCS}")
-    set_source_files_properties(${RES_SRCS} PROPERTIES GENERATED true)
-    add_custom_command(
-            OUTPUT ${RES_SRCS}
-            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/pocomsg.mc"
-            COMMAND "${CMAKE_MC_COMPILER}" -h "${CMAKE_CURRENT_SOURCE_DIR}/src" -r "${CMAKE_CURRRENT_SOURCE_DIR}/src" "${CMAKE_CURRRENT_SOURCE_DIR}/src/pocomsg.mc"
-            VERBATIM # recommended: p260	    VERBATIM # recommended: p260
-    )
 
-endif (WIN32)
+macro(POCO_HEADERS out name)
+    set_source_files_properties(${ARGN} PROPERTIES HEADER_FILE_ONLY TRUE)
+    source_group("${name}\\Header Files" FILES ${ARGN})
+    list(APPEND ${out} ${ARGN})
+endmacro()
+
+macro(POCO_MESSAGES out name)
+    if(WIN32)
+        foreach(msg ${ARGN})
+            get_filename_component(msg_name ${msg} NAME)
+            get_filename_component(msg_path ${msg} ABSOLUTE)
+            string(REPLACE ".mc" ".h" hdr ${msg_name})
+            set_source_files_properties(${hdr} PROPERTIES GENERATED TRUE)
+            add_custom_command(
+                OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${hdr}
+                DEPENDS ${msg}
+                COMMAND ${CMAKE_MC_COMPILER}
+                ARGS
+                    -h ${CMAKE_CURRENT_BINARY_DIR}
+                    -r ${CMAKE_CURRENT_BINARY_DIR}
+                    ${msg_path}
+                VERBATIM # recommended: p260
+            )
+
+            # Add the generated file to the include directory
+            include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+            # Add the generated headers to POCO_HEADERS of the component
+            POCO_HEADERS( ${out} ${name} ${CMAKE_CURRENT_BINARY_DIR}/${hdr})
+
+        endforeach()
+
+        set_source_files_properties(${ARGN} PROPERTIES HEADER_FILE_ONLY TRUE)
+        source_group("${name}\\Message Files" FILES ${ARGN})
+        list(APPEND ${out} ${ARGN})
+
+    endif(WIN32)
+endmacro()
+
+POCO_MESSAGES(SRCS Logging src/pocomsg.mc)
 
 set(LIN_SRCS
         src/SyslogChannel.cpp
