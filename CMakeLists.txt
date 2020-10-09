@@ -5,7 +5,7 @@
 
 PROJECT(Poco)
 
-cmake_minimum_required(VERSION 3.15..3.18)
+cmake_minimum_required(VERSION 3.14)
 
 set(SHARED_LIBRARY_VERSION "22")
 
