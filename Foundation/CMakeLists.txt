@@ -1,38 +1,5 @@
 set(LIBNAME "PocoFoundation")
 
-#if (WIN32)
-#    # cmake has CMAKE_RC_COMPILER, but no message compiler
-#    if ("${CMAKE_GENERATOR}" MATCHES "Visual Studio")
-#        # this path is only present for 2008+, but we currently require PATH to
-#        # be set up anyway
-#        get_filename_component(sdk_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" REALPATH)
-#        get_filename_component(kit_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot]" REALPATH)
-#        set (X64 TRUE)
-#        if ("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
-#            set(X64 FALSE)
-#        endif()
-#        message(STATUS "CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P}")
-#        message(STATUS "X64 ${X64}")
-#        message(STATUS "MSVC_VERSION ${MSVC_VERSION}")
-#        if (X64)
-#            set(sdk_bindir "${sdk_dir}/bin/x64")
-#            set(kit_bindir "${kit_dir}/bin/x64")
-#        else (X64)
-#            set(sdk_bindir "${sdk_dir}/bin")
-#            set(kit_bindir "${kit_dir}/bin/x86")
-#        endif (X64)
-#    endif ()
-#    message(STATUS "sdk_bindir ${sdk_bindir}")
-#    message(STATUS "kit_bindir ${kit_bindir}")
-#    find_program(CMAKE_MC_COMPILER mc.exe HINTS "${sdk_bindir}" "${kit_bindir}"
-#            DOC "path to message compiler")
-#    if (NOT CMAKE_MC_COMPILER)
-#        message(FATAL_ERROR "message compiler not found: required to build")
-#    endif (NOT CMAKE_MC_COMPILER)
-#    message(STATUS "Found message compiler: ${CMAKE_MC_COMPILER}")
-#    mark_as_advanced(CMAKE_MC_COMPILER)
-#endif (WIN32)
-
 set(BASE_SRCS
         src/ASCIIEncoding.cpp
         src/Ascii.cpp
