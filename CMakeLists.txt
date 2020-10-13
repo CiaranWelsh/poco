@@ -101,6 +101,8 @@ include(FindOpenSSL)
 
 include(FindMySQL)
 
+include(FindMC)
+
 #include(FindAPR)
 #include(FindApache2)
 
