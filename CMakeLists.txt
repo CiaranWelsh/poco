@@ -164,45 +164,45 @@ ENDIF ()
 
 
 add_subdirectory(Foundation)
-if (${BUILD_XML})
+if (${ENABLE_XML})
     add_subdirectory(XML)
 endif ()
 
-if (${BUILD_JSON})
+if (${ENABLE_JSON})
     add_subdirectory(JSON)
 endif ()
 
-if (${BUILD_MongoDB})
+if (${ENABLE_MongoDB})
     add_subdirectory(MongoDB)
 endif ()
 
-if (${BUILD_PDF})
+if (${ENABLE_PDF})
     add_subdirectory(PDF)
 endif ()
 
-if (${BUILD_Util})
+if (${ENABLE_UTIL})
     add_subdirectory(Util)
 endif ()
 
-if (${BUILD_Net})
+if (${ENABLE_NET})
     add_subdirectory(Net)
 endif ()
 
 
 # OPENSSL_SSL_LIBRARY
-if (${BUILD_SSL})
+if (${ENABLE_NETSSL})
     if (OPENSSL_FOUND)
         include_directories(${OPENSSL_INCLUDE_DIR})
         add_subdirectory(NetSSL_OpenSSL)
         add_subdirectory(Crypto)
     endif (OPENSSL_FOUND)
 endif ()
-if (${BUILD_DATA})
+if (${ENABLE_DATA})
     add_subdirectory(Data)
 endif ()
 #add_subdirectory(WebWidgets)
 
-if (${BUILD_ZIP})
+if (${ENABLE_ZIP})
     add_subdirectory(Zip)
 endif ()
 if (APRUTIL_FOUND AND APACHE_FOUND)
